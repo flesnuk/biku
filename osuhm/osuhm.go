@@ -45,11 +45,6 @@ func Load(dirPath string) *OsuHM {
 	return ret
 }
 
-// SetAPIKey applies an osu! API key to OsuHM
-func (osuhm *OsuHM) SetAPIKey(apiKey string) {
-	osuhm.APIKey = apiKey
-}
-
 // SaveCache stores an OsuHM cache file in dest folder
 func (osuhm *OsuHM) SaveCache(dest string) {
 	err := save(path.Join(dest, cacheName), osuhm)

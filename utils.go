@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"sort"
 
 	oppai "github.com/flesnuk/oppai5"
 	"github.com/flesnuk/osu-tools/osr"
@@ -10,8 +11,7 @@ import (
 )
 
 func getReplay(x os.FileInfo) *osu.Replay {
-	osuDirectory := "D:/osu!"
-	f, err := os.Open(filepath.Join(filepath.Join(osuDirectory, "Data/r"), x.Name()))
+	f, err := os.Open(filepath.Join(filepath.Join(hm.OsuFolder, "Data/r"), x.Name()))
 	if err != nil {
 		return nil
 	}
@@ -22,6 +22,22 @@ func getReplay(x os.FileInfo) *osu.Replay {
 	}
 	replay.ModTime = x.ModTime()
 	return &replay
+}
+
+// ReadDir reads the directory named by dirname and returns
+// a list of directory entries sorted by modtime.
+func ReadDirByTime(dirname string) ([]os.FileInfo, error) {
+	f, err := os.Open(dirname)
+	if err != nil {
+		return nil, err
+	}
+	list, err := f.Readdir(-1)
+	f.Close()
+	if err != nil {
+		return nil, err
+	}
+	sort.Slice(list, func(i, j int) bool { return list[i].ModTime().UnixNano() > list[j].ModTime().UnixNano() })
+	return list, nil
 }
 
 func createFoo(osuFile *os.File, replay *osu.Replay, bm *osu.Beatmap) *Foo {

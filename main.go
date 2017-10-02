@@ -3,11 +3,11 @@ package main
 import (
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 	"time"
 
 	. "github.com/flesnuk/biku/osuhm"
+	"github.com/flesnuk/osu-tools/osu"
 
 	"github.com/lxn/walk"
 )
@@ -22,22 +22,6 @@ var panel *walk.Composite
 var panelPP *PPanel
 
 type lbl = *walk.Label
-
-// ReadDir reads the directory named by dirname and returns
-// a list of directory entries sorted by modtime.
-func ReadDirByTime(dirname string) ([]os.FileInfo, error) {
-	f, err := os.Open(dirname)
-	if err != nil {
-		return nil, err
-	}
-	list, err := f.Readdir(-1)
-	f.Close()
-	if err != nil {
-		return nil, err
-	}
-	sort.Slice(list, func(i, j int) bool { return list[i].ModTime().UnixNano() > list[j].ModTime().UnixNano() })
-	return list, nil
-}
 
 func getReplays() []*Foo {
 	list, _ := ReadDirByTime(filepath.Join(osuDirectory, "Data/r"))
@@ -79,6 +63,36 @@ func main() {
 	hm = Load(".")
 	var tv *walk.TableView = new(walk.TableView)
 	model := NewFooModel()
+	tv.Synchronize(func() {
+		model.Sort(1, walk.SortDescending)
+	})
+
+	x := make(chan osu.Replay)
+
+	hm.StartNotifier(x)
+
+	go func() {
+		for replay := range x {
+			replay.ModTime = time.Now()
+			bm := hm.GetBeatmap(replay.BeatmapHash)
+			if bm == nil {
+				continue
+			}
+
+			osuFile, err := os.Open(hm.GetBeatmapPath(bm))
+			if err != nil {
+				continue
+			}
+
+			model.items = append(model.items, createFoo(osuFile, &replay, bm))
+			osuFile.Close()
+
+			tv.Synchronize(func() {
+				model.Sort(1, walk.SortDescending)
+			})
+		}
+
+	}()
 
 	panelPP = new(PPanel)
 

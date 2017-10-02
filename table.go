@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"sort"
+	"time"
 
 	"github.com/lxn/walk"
 )
@@ -28,6 +29,12 @@ func (m *FooModel) Value(row, col int) interface{} {
 	case 0:
 		return item.Title
 	case 1:
+		if item.Tiempo.Format("2006-01-02") == time.Now().Format("2006-01-02") {
+			return item.Tiempo.Format("Today 15:04")
+		}
+		if item.Tiempo.Format("2006-01-02") == time.Now().AddDate(0, 0, -1).Format("2006-01-02") {
+			return item.Tiempo.Format("Yesterday 15:04")
+		}
 		return item.Tiempo.Format("2006-01-02 15:04")
 	case 2:
 		return item.PP.PP.Total
