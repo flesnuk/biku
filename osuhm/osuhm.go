@@ -10,7 +10,7 @@ import (
 	"github.com/flesnuk/osu-tools/osudb"
 )
 
-const cacheName = "cache.gob"
+const cacheName = "biku-cache.gob"
 
 // OsuHM stores osu root path, the api key and hashmap of beatmaps
 type OsuHM struct {

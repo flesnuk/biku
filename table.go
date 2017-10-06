@@ -35,6 +35,9 @@ func (m *FooModel) Value(row, col int) interface{} {
 		if item.Tiempo.Format("2006-01-02") == time.Now().AddDate(0, 0, -1).Format("2006-01-02") {
 			return item.Tiempo.Format("Yesterday 15:04")
 		}
+		if item.Tiempo.After(time.Now().AddDate(0, 0, -7)) {
+			return item.Tiempo.Format("Monday 15:04")
+		}
 		return item.Tiempo.Format("2006-01-02 15:04")
 	case 2:
 		return item.PP.PP.Total
@@ -90,7 +93,7 @@ func (m *FooModel) Sort(col int, order walk.SortOrder) error {
 }
 
 func getImage(id int) walk.Image {
-	im1, err := walk.NewImageFromFile(fmt.Sprintf(filepath.Join(osuDirectory, "Data/bt/%dl.jpg"), id))
+	im1, err := walk.NewImageFromFile(fmt.Sprintf(filepath.Join(osuFolder, "Data/bt/%dl.jpg"), id))
 	if err != nil {
 		return nil
 	}

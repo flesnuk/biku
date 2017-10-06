@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 
@@ -56,5 +57,35 @@ func createFoo(osuFile *os.File, replay *osu.Replay, bm *osu.Beatmap) *Foo {
 		Tiempo: replay.ModTime,
 		PP:     pp,
 		Info:   *replay,
+	}
+}
+
+func exists(path string) bool {
+	if _, err := os.Stat(osuFolder); os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
+
+func check(osuFolder string) bool {
+	if exists(osuFolder) &&
+		exists(path.Join(osuFolder, "osu!.exe")) &&
+		exists(path.Join(osuFolder, "osu!.db")) &&
+		exists(path.Join(osuFolder, "Data/r")) {
+		return true
+	}
+	return false
+}
+
+func checkAll() (string, bool) {
+	switch {
+	case check(osuFolder):
+		return osuFolder, true
+	case check("C:/Program Files/osu!"):
+		return "C:/Program Files/osu!", true
+	case check("C:/Program Files (x86)/osu!"):
+		return "C:/Program Files (x86)/osu!", true
+	default:
+		return "", false
 	}
 }

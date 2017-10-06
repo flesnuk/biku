@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -14,7 +15,7 @@ import (
 
 const cachefile = "cache.gob"
 
-var osuDirectory = "D:/osu!"
+var osuFolder = "D:/osu"
 
 var hm *OsuHM
 
@@ -24,7 +25,7 @@ var panelPP *PPanel
 type lbl = *walk.Label
 
 func getReplays() []*Foo {
-	list, _ := ReadDirByTime(filepath.Join(osuDirectory, "Data/r"))
+	list, _ := ReadDirByTime(filepath.Join(osuFolder, "Data/r"))
 	ret := make([]*Foo, 0, 5)
 	for _, x := range list {
 		if !strings.HasSuffix(x.Name(), "osr") {
@@ -60,8 +61,27 @@ func getReplays() []*Foo {
 }
 
 func main() {
-	hm = Load(".")
 	var tv *walk.TableView = new(walk.TableView)
+
+	fd := new(walk.FileDialog)
+
+	_, ok := checkAll()
+	for !ok {
+		accepted, err := fd.ShowBrowseFolder(nil)
+		if !accepted || err != nil {
+			os.Exit(0)
+		}
+		osuFolder = fd.FilePath
+		_, ok = checkAll()
+		fmt.Println(ok)
+	}
+
+	hm = Load(".")
+	if hm == nil {
+		hm = NewOsuHM(osuFolder)
+		hm.SaveCache(".")
+	}
+
 	model := NewFooModel()
 	tv.Synchronize(func() {
 		model.Sort(1, walk.SortDescending)
