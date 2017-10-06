@@ -43,5 +43,9 @@ func updateInfo(i int, m *FooModel, im *walk.ImageView) {
 		panelPP.P99.SetText(fmt.Sprintf("%.2f", m.items[i].PP.StepPP.P99))
 		panelPP.P99p5.SetText(fmt.Sprintf("%.2f", m.items[i].PP.StepPP.P99p5))
 		panelPP.P100.SetText(fmt.Sprintf("%.2f", m.items[i].PP.StepPP.P100))
+
+		rankText := grade(m.items[i].Info)
+		panelPP.Rank.SetText(rankText)
+		panelPP.Rank.SetTextColor(gradeColor(rankText))
 	})
 }
