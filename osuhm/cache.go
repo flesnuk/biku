@@ -14,8 +14,8 @@ func save(path string, object interface{}) error {
 	}
 
 	file, err := os.Create(path)
+	defer file.Close()
 	if err != nil {
-		file.Close()
 		return err
 	}
 
@@ -23,7 +23,6 @@ func save(path string, object interface{}) error {
 	err = syscall.SetFileAttributes(nameptr, syscall.FILE_ATTRIBUTE_HIDDEN)
 	if err != nil {
 		os.Remove(path) // XXX do we want to remove it? check for error
-		file.Close()    // XXX check error
 		return err
 	}
 

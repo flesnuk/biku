@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -15,7 +14,7 @@ import (
 
 const cachefile = "cache.gob"
 
-var osuFolder = "D:/osu"
+var osuFolder = ""
 
 var hm *OsuHM
 
@@ -61,38 +60,37 @@ func getReplays() []*Foo {
 }
 
 func main() {
-	var tv *walk.TableView = new(walk.TableView)
-
-	fd := new(walk.FileDialog)
-
-	_, ok := checkAll()
-	for !ok {
-		accepted, err := fd.ShowBrowseFolder(nil)
-		if !accepted || err != nil {
-			os.Exit(0)
-		}
-		osuFolder = fd.FilePath
-		_, ok = checkAll()
-		fmt.Println(ok)
-	}
+	tv := new(walk.TableView)
 
 	hm = Load(".")
 	if hm == nil {
+		var ok bool
+		osuFolder, ok = checkAll()
+		for !ok {
+			fd := new(walk.FileDialog)
+			fd.Title = "Select your osu! folder"
+			accepted, err := fd.ShowBrowseFolder(nil)
+			if !accepted || err != nil {
+				os.Exit(0)
+			}
+			osuFolder = fd.FilePath
+			_, ok = checkAll()
+		}
 		hm = NewOsuHM(osuFolder)
 		hm.SaveCache(".")
 	}
+	osuFolder = hm.OsuFolder
 
 	model := NewFooModel()
 	tv.Synchronize(func() {
 		model.Sort(1, walk.SortDescending)
 	})
 
-	x := make(chan osu.Replay)
-
-	hm.StartNotifier(x)
+	replayChan := make(chan osu.Replay)
+	hm.StartNotifier(replayChan)
 
 	go func() {
-		for replay := range x {
+		for replay := range replayChan {
 			replay.ModTime = time.Now()
 			bm := hm.GetBeatmap(replay.BeatmapHash)
 			if bm == nil {
@@ -116,8 +114,7 @@ func main() {
 
 	panelPP = new(PPanel)
 
-	var imv *walk.ImageView = new(walk.ImageView)
+	imv := new(walk.ImageView)
 
 	getMainWindow(model, tv, imv, panelPP).Run()
-
 }

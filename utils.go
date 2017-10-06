@@ -61,7 +61,7 @@ func createFoo(osuFile *os.File, replay *osu.Replay, bm *osu.Beatmap) *Foo {
 }
 
 func exists(path string) bool {
-	if _, err := os.Stat(osuFolder); os.IsNotExist(err) {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return false
 	}
 	return true
