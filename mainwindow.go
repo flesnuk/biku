@@ -7,19 +7,19 @@ import (
 
 func getMainWindow(model *FooModel, tv *walk.TableView, imv *walk.ImageView, panelPP *PPanel) MainWindow {
 	return MainWindow{
-		Title:  "PIPO",
-		Size:   Size{950, 500},
+		Title:  "Biku",
+		Size:   Size{920, 500},
 		Layout: HBox{MarginsZero: true},
 		Children: []Widget{
 			TableView{
 				AssignTo: &tv,
 				Columns: []TableViewColumn{
-					{Title: "Title", Width: 350},
+					{Title: "Title", Width: 370},
 					{Title: "Date", Width: 105},
-					{Title: "PP"},
+					{Title: "PP", Width: 60},
 				},
 				Model:   model,
-				MinSize: Size{600, 120},
+				MinSize: Size{550, 120},
 				MaxSize: Size{600, 500},
 				OnCurrentIndexChanged: func() {
 					updateInfo(tv.CurrentIndex(), model, imv)
@@ -29,7 +29,7 @@ func getMainWindow(model *FooModel, tv *walk.TableView, imv *walk.ImageView, pan
 				AssignTo: &panel,
 				Layout:   VBox{MarginsZero: true},
 				MinSize:  Size{160, 0},
-				MaxSize:  Size{400, 500},
+				MaxSize:  Size{370, 500},
 
 				Children: []Widget{
 					Composite{
@@ -39,7 +39,7 @@ func getMainWindow(model *FooModel, tv *walk.TableView, imv *walk.ImageView, pan
 						Children: []Widget{
 							ImageView{
 								AssignTo: &imv,
-								Image:    getImage(596704),
+								Image:    getImage(0),
 								MaxSize:  Size{160, 120},
 								MinSize:  Size{160, 120},
 							},
@@ -77,7 +77,7 @@ func getMainWindow(model *FooModel, tv *walk.TableView, imv *walk.ImageView, pan
 										Text:     "99.33%",
 									},
 									Label{
-										Text: "Rank: ",
+										Text: "Grade: ",
 										Font: Font{PointSize: 10},
 									},
 									Label{

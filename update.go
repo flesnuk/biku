@@ -13,12 +13,14 @@ func updateInfo(i int, m *FooModel, im *walk.ImageView) {
 		old := im.Image()
 		new := getImage(m.items[i].Foto)
 		im.SetImage(new)
-		old.Dispose()
+		if old != nil {
+			old.Dispose()
+		}
 	})
 	panel.Synchronize(func() {
 		panelPP.Mods.SetText(oppai.ModsStr(int(m.items[i].Info.Mods)))
 		panelPP.Combo.SetText(fmt.Sprintf("%d/%dx", m.items[i].Info.Combo, m.items[i].PP.Diff.Beatmap.MaxCombo))
-		panelPP.Score.SetText(strconv.Itoa(int(m.items[i].Info.Score)))
+		panelPP.Score.SetText(formatScore(int(m.items[i].Info.Score)))
 		panelPP.N300.SetText(strconv.Itoa(int(m.items[i].Info.N300)))
 		panelPP.N100.SetText(strconv.Itoa(int(m.items[i].Info.N100)))
 		panelPP.N50.SetText(strconv.Itoa(int(m.items[i].Info.N50)))
@@ -43,7 +45,9 @@ func updateInfo(i int, m *FooModel, im *walk.ImageView) {
 		panelPP.P99.SetText(fmt.Sprintf("%.2f", m.items[i].PP.StepPP.P99))
 		panelPP.P99p5.SetText(fmt.Sprintf("%.2f", m.items[i].PP.StepPP.P99p5))
 		panelPP.P100.SetText(fmt.Sprintf("%.2f", m.items[i].PP.StepPP.P100))
-
+		acc := (&oppai.Accuracy{int(m.items[i].Info.N300), int(m.items[i].Info.N100),
+			int(m.items[i].Info.N50), int(m.items[i].Info.Misses)}).Value()
+		panelPP.Acc.SetText(fmt.Sprintf("%.2f %%", acc*100.0))
 		rankText := grade(m.items[i].Info)
 		panelPP.Rank.SetText(rankText)
 		panelPP.Rank.SetTextColor(gradeColor(rankText))

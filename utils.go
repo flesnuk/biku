@@ -5,6 +5,7 @@ import (
 	"path"
 	"path/filepath"
 	"sort"
+	"strconv"
 
 	oppai "github.com/flesnuk/oppai5"
 	"github.com/flesnuk/osu-tools/osr"
@@ -52,7 +53,7 @@ func createFoo(osuFile *os.File, replay *osu.Replay, bm *osu.Beatmap) *Foo {
 	})
 
 	return &Foo{
-		Title:  bm.Filename,
+		Title:  bm.Filename[:len(bm.Filename)-4],
 		Foto:   int(bm.ID),
 		Tiempo: replay.ModTime,
 		PP:     pp,
@@ -88,4 +89,25 @@ func checkAll() (string, bool) {
 	default:
 		return "", false
 	}
+}
+
+func formatScore(n int) string {
+	fstr := ""
+	for n >= 1000 {
+		if x := n % 1000; x != 0 {
+			switch {
+			case x < 10:
+				fstr = ".00" + strconv.Itoa(x) + fstr
+			case x < 100:
+				fstr = ".0" + strconv.Itoa(x) + fstr
+			default:
+				fstr = "." + strconv.Itoa(x) + fstr
+			}
+
+		} else {
+			fstr = ".000" + fstr
+		}
+		n /= 1000
+	}
+	return strconv.Itoa(n) + fstr
 }
