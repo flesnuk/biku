@@ -15,6 +15,7 @@ import (
 const cachefile = "cache.gob"
 
 var osuFolder = ""
+var lastago = -7
 
 var hm *OsuHM
 
@@ -33,7 +34,7 @@ func getReplays() []*Foo {
 		if x.ModTime().After(time.Now().AddDate(0, 0, 0)) {
 			continue
 		}
-		if x.ModTime().Before(time.Now().AddDate(0, 0, -7)) {
+		if x.ModTime().Before(time.Now().AddDate(0, 0, lastago)) {
 			break
 		}
 
@@ -61,6 +62,14 @@ func getReplays() []*Foo {
 
 func main() {
 	tv := new(walk.TableView)
+
+	// if cmd, err := getDialog().Run(nil); err != nil {
+	// 	fmt.Println(err)
+	// } else if cmd == walk.DlgCmdOK {
+	// 	fmt.Println("OK")
+	// } else if cmd == walk.DlgCmdCancel {
+	// 	fmt.Println("Cancel")
+	// }
 
 	hm = Load(".")
 	if hm == nil {

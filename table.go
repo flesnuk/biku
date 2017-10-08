@@ -11,7 +11,7 @@ import (
 
 func NewFooModel() *FooModel {
 	m := new(FooModel)
-	m.ResetRows()
+	//m.ResetRows()
 	return m
 }
 
