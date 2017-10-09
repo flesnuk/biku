@@ -42,7 +42,10 @@ func RunNotifier(osuFolder string, replayChan chan osu.Replay) {
 			}
 			time.Sleep(time.Millisecond * 500)
 		}
-		replayChan <- osr.NewReplay(f)
+		replay := osr.NewReplay(f)
 		f.Close()
+		replay.ModTime = time.Now()
+		replay.Path = filepath.ToSlash(ei.Path())
+		replayChan <- replay
 	}
 }

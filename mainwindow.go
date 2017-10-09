@@ -1,12 +1,16 @@
 package main
 
 import (
+	"os/exec"
+	"path/filepath"
+
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 )
 
 func getMainWindow(model *FooModel, tv *walk.TableView, imv *walk.ImageView, panelPP *PPanel) MainWindow {
 	comboBoxValue := new(walk.ComboBox)
+	watchReplayBtn := new(walk.PushButton)
 	return MainWindow{
 		Title:  "Biku",
 		Size:   Size{950, 560},
@@ -27,6 +31,7 @@ func getMainWindow(model *FooModel, tv *walk.TableView, imv *walk.ImageView, pan
 						// MaxSize: Size{600, 500},
 						OnCurrentIndexChanged: func() {
 							updateInfo(tv.CurrentIndex(), model, imv)
+							watchReplayBtn.SetEnabled(true)
 						},
 					},
 					Composite{
@@ -325,6 +330,16 @@ func getMainWindow(model *FooModel, tv *walk.TableView, imv *walk.ImageView, pan
 						},
 					},
 					HSpacer{},
+					PushButton{
+						AssignTo: &watchReplayBtn,
+						Text:     "Watch replay",
+						OnClicked: func() {
+							if i := tv.CurrentIndex(); i >= 0 {
+								exec.Command("explorer", filepath.FromSlash(model.items[i].Info.Path)).Run()
+							}
+						},
+						Enabled: false,
+					},
 				},
 			},
 		},

@@ -15,12 +15,15 @@ func apiGetBeatmap(apiKey, beatmapHash string) *osu.Beatmap {
 	})
 
 	if err != nil || len(bms) <= 0 {
+		fmt.Println(err)
 		return nil
 	}
 
 	bm := bms[0]
 	fname := fmt.Sprintf("%s - %s (%s) [%s].osu",
 		bm.Artist, bm.Title, bm.Creator, bm.DiffName)
+	fmt.Println(fname)
+	fmt.Println(bms)
 	return &osu.Beatmap{
 		ID:       uint32(bm.BeatmapSetID),
 		Filename: strings.Replace(fname, "/", "", -1),

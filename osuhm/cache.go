@@ -13,6 +13,7 @@ func save(path string, object interface{}) error {
 		return err
 	}
 
+	os.Remove(path)
 	file, err := os.Create(path)
 	defer file.Close()
 	if err != nil {
@@ -22,7 +23,7 @@ func save(path string, object interface{}) error {
 	// Change the file into a hidden file
 	err = syscall.SetFileAttributes(nameptr, syscall.FILE_ATTRIBUTE_HIDDEN)
 	if err != nil {
-		os.Remove(path) // XXX do we want to remove it? check for error
+		os.Remove(path)
 		return err
 	}
 

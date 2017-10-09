@@ -1,12 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"os"
-	"path/filepath"
-	"strings"
+	"path"
 	"time"
 
 	. "github.com/flesnuk/biku/osuhm"
+	"github.com/flesnuk/osu-tools/osr"
 	"github.com/flesnuk/osu-tools/osu"
 
 	"github.com/lxn/walk"
@@ -15,7 +16,7 @@ import (
 const cachefile = "cache.gob"
 
 var osuFolder = ""
-var lastago = -7
+var lastago = -1
 
 var hm *OsuHM
 
@@ -25,23 +26,22 @@ var panelPP *PPanel
 type lbl = *walk.Label
 
 func getReplays() []*Foo {
-	list, _ := ReadDirByTime(filepath.Join(osuFolder, "Data/r"))
+	ff, err := os.Open(path.Join(osuFolder, "scores.db"))
+	defer ff.Close()
+	if err != nil {
+		fmt.Println("FAIL")
+	}
+	list := osr.ReadScoreDB(ff)
+	//list, _ := ReadDirByTime(filepath.Join(osuFolder, "Data/r"))
 	ret := make([]*Foo, 0, 5)
-	for _, x := range list {
-		if !strings.HasSuffix(x.Name(), "osr") {
+	for _, replay := range list {
+		if replay.ModTime.After(time.Now().AddDate(0, 0, 0)) {
 			continue
 		}
-		if x.ModTime().After(time.Now().AddDate(0, 0, 0)) {
-			continue
-		}
-		if x.ModTime().Before(time.Now().AddDate(0, 0, lastago)) {
+		if replay.ModTime.Before(time.Now().AddDate(0, 0, lastago)) {
 			break
 		}
 
-		replay := getReplay(x)
-		if replay == nil {
-			continue
-		}
 		bm := hm.GetBeatmap(replay.BeatmapHash)
 		if bm == nil {
 			continue
@@ -51,8 +51,7 @@ func getReplays() []*Foo {
 		if err != nil {
 			continue
 		}
-
-		ret = append(ret, createFoo(osuFile, replay, bm))
+		ret = append(ret, createFoo(osuFile, &replay, bm))
 		osuFile.Close()
 
 	}
@@ -100,7 +99,6 @@ func main() {
 
 	go func() {
 		for replay := range replayChan {
-			replay.ModTime = time.Now()
 			bm := hm.GetBeatmap(replay.BeatmapHash)
 			if bm == nil {
 				continue
@@ -124,6 +122,8 @@ func main() {
 	panelPP = new(PPanel)
 
 	imv := new(walk.ImageView)
-
 	getMainWindow(model, tv, imv, panelPP).Run()
+	hm.SaveCache(".")
 }
+
+//504911232000000000 y 1601

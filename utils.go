@@ -23,6 +23,7 @@ func getReplay(x os.FileInfo) *osu.Replay {
 		return nil
 	}
 	replay.ModTime = x.ModTime()
+	replay.Path = path.Join(hm.OsuFolder, "Data/r", x.Name())
 	return &replay
 }
 
@@ -53,7 +54,7 @@ func createFoo(osuFile *os.File, replay *osu.Replay, bm *osu.Beatmap) *Foo {
 	})
 
 	return &Foo{
-		Title:  bm.Filename[:len(bm.Filename)-4],
+		Title:  bm.Filename,
 		Foto:   int(bm.ID),
 		Tiempo: replay.ModTime,
 		PP:     pp,
