@@ -47,7 +47,12 @@ func (m *FooModel) Value(row, col int) interface{} {
 }
 
 func (m *FooModel) ResetRows() {
-	foos := getReplays()
+	var foos []*Foo
+	if lastago >= -7 {
+		foos = getReplays()
+	} else {
+		foos = getReplaysFromDB()
+	}
 	m.items = make([]*Foo, len(foos))
 
 	for i, foo := range foos {
@@ -93,7 +98,7 @@ func (m *FooModel) Sort(col int, order walk.SortOrder) error {
 }
 
 func getImage(id int) walk.Image {
-	im1, err := walk.NewImageFromFile(fmt.Sprintf(filepath.Join(osuFolder, "Data/bt/%dl.jpg"), id))
+	im1, err := walk.NewImageFromFile(fmt.Sprintf(filepath.Join(hm.OsuFolder, "Data/bt/%dl.jpg"), id))
 	if err != nil {
 		return nil
 	}

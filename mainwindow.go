@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"os/exec"
 	"path/filepath"
 
+	"github.com/flesnuk/biku/osuhm"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 )
@@ -12,9 +14,10 @@ func getMainWindow(model *FooModel, tv *walk.TableView, imv *walk.ImageView, pan
 	comboBoxValue := new(walk.ComboBox)
 	watchReplayBtn := new(walk.PushButton)
 	return MainWindow{
-		Title:  "Biku",
-		Size:   Size{950, 560},
-		Layout: VBox{MarginsZero: true},
+		AssignTo: &mw,
+		Title:    "Biku",
+		Size:     Size{950, 560},
+		Layout:   VBox{MarginsZero: true},
 		Children: []Widget{
 			Composite{
 				Layout: HBox{MarginsZero: true},
@@ -313,10 +316,29 @@ func getMainWindow(model *FooModel, tv *walk.TableView, imv *walk.ImageView, pan
 				Layout: HBox{MarginsZero: true},
 				Children: []Widget{
 					PushButton{
-						Text: "Clear cache",
+						Text: "Refresh cache",
+						OnClicked: func() {
+							apikey := hm.APIKey
+							hmaux := osuhm.NewOsuHM(osuFolder)
+							if hmaux == nil {
+								walk.MsgBox(mw, "osu!db", "Please, close osu! before refreshing the cache",
+									walk.MsgBoxIconExclamation)
+								return
+							}
+							hm = hmaux
+							hm.APIKey = apikey
+							model.ResetRows()
+						},
 					},
 					PushButton{
 						Text: "Set osu! API",
+						OnClicked: func() {
+							osuapi := &OsuAPIKey{hm.APIKey}
+							if _, err := getDialog(osuapi).Run(mw); err != nil {
+								fmt.Println(err)
+							}
+							hm.APIKey = osuapi.OsuAPI
+						},
 					},
 					ComboBox{
 						AssignTo:      &comboBoxValue,
@@ -332,7 +354,7 @@ func getMainWindow(model *FooModel, tv *walk.TableView, imv *walk.ImageView, pan
 					HSpacer{},
 					PushButton{
 						AssignTo: &watchReplayBtn,
-						Text:     "Watch replay",
+						Text:     "Watch replay in osu!",
 						OnClicked: func() {
 							if i := tv.CurrentIndex(); i >= 0 {
 								exec.Command("explorer", filepath.FromSlash(model.items[i].Info.Path)).Run()

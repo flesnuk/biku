@@ -3,11 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
-	"path"
-	"time"
 
 	. "github.com/flesnuk/biku/osuhm"
-	"github.com/flesnuk/osu-tools/osr"
+	oppai "github.com/flesnuk/oppai5"
 	"github.com/flesnuk/osu-tools/osu"
 
 	"github.com/lxn/walk"
@@ -19,56 +17,27 @@ var osuFolder = ""
 var lastago = -1
 
 var hm *OsuHM
+var mw *walk.MainWindow
 
 var panel *walk.Composite
 var panelPP *PPanel
 
 type lbl = *walk.Label
 
-func getReplays() []*Foo {
-	ff, err := os.Open(path.Join(osuFolder, "scores.db"))
-	defer ff.Close()
-	if err != nil {
-		fmt.Println("FAIL")
-	}
-	list := osr.ReadScoreDB(ff)
-	//list, _ := ReadDirByTime(filepath.Join(osuFolder, "Data/r"))
-	ret := make([]*Foo, 0, 5)
-	for _, replay := range list {
-		if replay.ModTime.After(time.Now().AddDate(0, 0, 0)) {
-			continue
-		}
-		if replay.ModTime.Before(time.Now().AddDate(0, 0, lastago)) {
-			break
-		}
-
-		bm := hm.GetBeatmap(replay.BeatmapHash)
-		if bm == nil {
-			continue
-		}
-
-		osuFile, err := os.Open(hm.GetBeatmapPath(bm))
-		if err != nil {
-			continue
-		}
-		ret = append(ret, createFoo(osuFile, &replay, bm))
-		osuFile.Close()
-
-	}
-	return ret
-
+func calcPP(osuFile *os.File, replay osu.Replay, foo *Foo) {
+	foo.PP = oppai.PPInfo(oppai.Parse(osuFile), &oppai.Parameters{
+		replay.N300,
+		replay.N100,
+		replay.N50,
+		replay.Misses,
+		replay.Combo,
+		replay.Mods,
+	})
+	osuFile.Close()
 }
 
 func main() {
 	tv := new(walk.TableView)
-
-	// if cmd, err := getDialog().Run(nil); err != nil {
-	// 	fmt.Println(err)
-	// } else if cmd == walk.DlgCmdOK {
-	// 	fmt.Println("OK")
-	// } else if cmd == walk.DlgCmdCancel {
-	// 	fmt.Println("Cancel")
-	// }
 
 	hm = Load(".")
 	if hm == nil {
@@ -84,9 +53,21 @@ func main() {
 			osuFolder = fd.FilePath
 			_, ok = checkAll()
 		}
-		hm = NewOsuHM(osuFolder)
+		hmaux := NewOsuHM(osuFolder)
+		if hmaux == nil {
+			walk.MsgBox(mw, "osu!db", "Please, close osu! before refreshing the cache",
+				walk.MsgBoxIconExclamation)
+			return
+		}
+		hm = hmaux
+		osuapi := &OsuAPIKey{""}
+		if _, err := getDialog(osuapi).Run(nil); err != nil {
+			fmt.Println(err)
+		}
+		hm.APIKey = osuapi.OsuAPI
 		hm.SaveCache(".")
 	}
+
 	osuFolder = hm.OsuFolder
 
 	model := NewFooModel()
@@ -109,8 +90,9 @@ func main() {
 				continue
 			}
 
-			model.items = append(model.items, createFoo(osuFile, &replay, bm))
-			osuFile.Close()
+			foo := createFoo(osuFile, &replay, bm)
+			model.items = append(model.items, foo)
+			calcPP(osuFile, replay, foo)
 
 			tv.Synchronize(func() {
 				model.Sort(1, walk.SortDescending)

@@ -7,7 +7,6 @@ import (
 	"sort"
 	"strconv"
 
-	oppai "github.com/flesnuk/oppai5"
 	"github.com/flesnuk/osu-tools/osr"
 	"github.com/flesnuk/osu-tools/osu"
 )
@@ -44,20 +43,10 @@ func ReadDirByTime(dirname string) ([]os.FileInfo, error) {
 }
 
 func createFoo(osuFile *os.File, replay *osu.Replay, bm *osu.Beatmap) *Foo {
-	pp := oppai.PPInfo(oppai.Parse(osuFile), &oppai.Parameters{
-		replay.N300,
-		replay.N100,
-		replay.N50,
-		replay.Misses,
-		replay.Combo,
-		replay.Mods,
-	})
-
 	return &Foo{
 		Title:  bm.Filename,
 		Foto:   int(bm.ID),
 		Tiempo: replay.ModTime,
-		PP:     pp,
 		Info:   *replay,
 	}
 }
@@ -87,6 +76,8 @@ func checkAll() (string, bool) {
 		return "C:/Program Files/osu!", true
 	case check("C:/Program Files (x86)/osu!"):
 		return "C:/Program Files (x86)/osu!", true
+	case check("."):
+		return ".", true
 	default:
 		return "", false
 	}

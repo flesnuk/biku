@@ -58,11 +58,11 @@ func (osuhm *OsuHM) GetBeatmap(beatmapHash string) *osu.Beatmap {
 	bm, ok := osuhm.HM[beatmapHash]
 
 	if !ok {
-		bm := apiGetBeatmap(osuhm.APIKey, beatmapHash)
-		if bm == nil {
+		bm = apiGetBeatmap(osuhm.APIKey, beatmapHash)
+		if bm.ID == 0 {
 			return nil
 		}
-		osuhm.HM[beatmapHash] = *bm
+		osuhm.HM[beatmapHash] = bm
 	}
 
 	return &bm

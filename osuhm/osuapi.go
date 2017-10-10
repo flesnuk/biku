@@ -8,25 +8,24 @@ import (
 	"gopkg.in/thehowl/go-osuapi.v1"
 )
 
-func apiGetBeatmap(apiKey, beatmapHash string) *osu.Beatmap {
+func apiGetBeatmap(apiKey, beatmapHash string) osu.Beatmap {
 	c := osuapi.NewClient(apiKey)
 	bms, err := c.GetBeatmaps(osuapi.GetBeatmapsOpts{
 		BeatmapHash: beatmapHash,
 	})
 
 	if err != nil || len(bms) <= 0 {
-		fmt.Println(err)
-		return nil
+		return osu.Beatmap{}
 	}
 
 	bm := bms[0]
 	fname := fmt.Sprintf("%s - %s (%s) [%s].osu",
 		bm.Artist, bm.Title, bm.Creator, bm.DiffName)
-	fmt.Println(fname)
-	fmt.Println(bms)
-	return &osu.Beatmap{
+	fname = strings.Replace(fname, "/", "", -1)
+	fname = strings.Replace(fname, ":", "", -1)
+	return osu.Beatmap{
 		ID:       uint32(bm.BeatmapSetID),
-		Filename: strings.Replace(fname, "/", "", -1),
+		Filename: fname,
 	}
 
 }
