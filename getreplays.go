@@ -14,14 +14,14 @@ import (
 	"github.com/flesnuk/osu-tools/osr"
 )
 
-func getReplaysFromDB() []*Foo {
+func getReplaysFromDB() []*Row {
 	ff, err := os.Open(path.Join(hm.OsuFolder, "scores.db"))
 	defer ff.Close()
 	if err != nil {
 		fmt.Println("FAIL")
 	}
 	list := osr.ReadScoreDB(ff)
-	ret := make([]*Foo, 0, 5)
+	ret := make([]*Row, 0, 5)
 	for _, replay := range list {
 		if replay.ModTime.After(time.Now().AddDate(0, 0, 0)) {
 			continue
@@ -44,18 +44,18 @@ func getReplaysFromDB() []*Foo {
 			continue
 		}
 
-		foo := createFoo(osuFile, &replay, bm)
-		ret = append(ret, foo)
-		calcPP(osuFile, replay, foo)
+		row := createRow(osuFile, &replay, bm)
+		ret = append(ret, row)
+		calcPP(osuFile, replay, row)
 
 	}
 	return ret
 
 }
 
-func getReplays() []*Foo {
+func getReplays() []*Row {
 	list, _ := ReadDirByTime(filepath.Join(hm.OsuFolder, "Data/r"))
-	ret := make([]*Foo, 0, 5)
+	ret := make([]*Row, 0, 5)
 	for _, x := range list {
 		if !strings.HasSuffix(x.Name(), "osr") {
 			continue
@@ -82,9 +82,9 @@ func getReplays() []*Foo {
 			continue
 		}
 
-		foo := createFoo(osuFile, replay, bm)
-		ret = append(ret, foo)
-		calcPP(osuFile, *replay, foo)
+		row := createRow(osuFile, replay, bm)
+		ret = append(ret, row)
+		calcPP(osuFile, *replay, row)
 
 	}
 	return ret

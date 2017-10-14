@@ -8,7 +8,7 @@ import (
 	"github.com/lxn/walk"
 )
 
-func updateInfo(i int, m *FooModel, im *walk.ImageView) {
+func updateInfo(i int, m *RowModel, im *walk.ImageView) {
 	if m == nil || len(m.items) <= 0 || i >= len(m.items) || i < 0 {
 		return
 	}

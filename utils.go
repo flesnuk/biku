@@ -42,8 +42,8 @@ func ReadDirByTime(dirname string) ([]os.FileInfo, error) {
 	return list, nil
 }
 
-func createFoo(osuFile *os.File, replay *osu.Replay, bm *osu.Beatmap) *Foo {
-	return &Foo{
+func createRow(osuFile *os.File, replay *osu.Replay, bm *osu.Beatmap) *Row {
+	return &Row{
 		Title:  bm.Filename,
 		Foto:   int(bm.ID),
 		Tiempo: replay.ModTime,

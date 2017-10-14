@@ -27,8 +27,8 @@ var panelPP *PPanel
 
 type lbl = *walk.Label
 
-func calcPP(osuFile *os.File, replay osu.Replay, foo *Foo) {
-	foo.PP = oppai.PPInfo(oppai.Parse(osuFile), &oppai.Parameters{
+func calcPP(osuFile *os.File, replay osu.Replay, row *Row) {
+	row.PP = oppai.PPInfo(oppai.Parse(osuFile), &oppai.Parameters{
 		replay.N300,
 		replay.N100,
 		replay.N50,
@@ -72,7 +72,7 @@ func main() {
 
 	osuFolder = hm.OsuFolder
 
-	model := NewFooModel()
+	model := NewRowModel()
 	tv.Synchronize(func() {
 		model.Sort(1, walk.SortDescending)
 	})
@@ -92,9 +92,9 @@ func main() {
 				continue
 			}
 
-			foo := createFoo(osuFile, &replay, bm)
-			model.items = append(model.items, foo)
-			calcPP(osuFile, replay, foo)
+			row := createRow(osuFile, &replay, bm)
+			model.items = append(model.items, row)
+			calcPP(osuFile, replay, row)
 
 			model.ResetRows()
 			tv.Synchronize(func() {

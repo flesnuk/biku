@@ -17,7 +17,7 @@ type PPanel struct {
 	P95, P98, P99, P99p5, P100     lbl
 }
 
-type Foo struct {
+type Row struct {
 	Index  int
 	Title  string
 	Foto   int
@@ -26,10 +26,10 @@ type Foo struct {
 	Info   osu.Replay
 }
 
-type FooModel struct {
+type RowModel struct {
 	walk.TableModelBase
 	walk.SorterBase
 	sortColumn int
 	sortOrder  walk.SortOrder
-	items      []*Foo
+	items      []*Row
 }

@@ -10,7 +10,7 @@ import (
 	. "github.com/lxn/walk/declarative"
 )
 
-func getMainWindow(model *FooModel, tv *walk.TableView, imv *walk.ImageView, panelPP *PPanel) MainWindow {
+func getMainWindow(model *RowModel, tv *walk.TableView, imv *walk.ImageView, panelPP *PPanel) MainWindow {
 	comboBoxValue := new(walk.ComboBox)
 	watchReplayBtn := new(walk.PushButton)
 	return MainWindow{

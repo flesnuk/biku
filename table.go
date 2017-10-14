@@ -9,20 +9,20 @@ import (
 	"github.com/lxn/walk"
 )
 
-func NewFooModel() *FooModel {
-	m := new(FooModel)
+func NewRowModel() *RowModel {
+	m := new(RowModel)
 	//m.ResetRows()
 	return m
 }
 
 // Called by the TableView from SetModel and every time the model publishes a
 // RowsReset event.
-func (m *FooModel) RowCount() int {
+func (m *RowModel) RowCount() int {
 	return len(m.items)
 }
 
 // Called by the TableView when it needs the text to display for a given cell.
-func (m *FooModel) Value(row, col int) interface{} {
+func (m *RowModel) Value(row, col int) interface{} {
 	item := m.items[row]
 
 	switch col {
@@ -46,18 +46,18 @@ func (m *FooModel) Value(row, col int) interface{} {
 	panic("unexpected col")
 }
 
-func (m *FooModel) ResetRows() {
-	var foos []*Foo
+func (m *RowModel) ResetRows() {
+	var rows []*Row
 	if lastago >= -7 {
-		foos = getReplays()
+		rows = getReplays()
 	} else {
-		foos = getReplaysFromDB()
+		rows = getReplaysFromDB()
 	}
-	m.items = make([]*Foo, len(foos))
+	m.items = make([]*Row, len(rows))
 
-	for i, foo := range foos {
-		foo.Index = i
-		m.items[i] = foo
+	for i, row := range rows {
+		row.Index = i
+		m.items[i] = row
 	}
 
 	// Notify TableView and other interested parties about the reset.
@@ -67,7 +67,7 @@ func (m *FooModel) ResetRows() {
 }
 
 // Called by the TableView to sort the model.
-func (m *FooModel) Sort(col int, order walk.SortOrder) error {
+func (m *RowModel) Sort(col int, order walk.SortOrder) error {
 	m.sortColumn, m.sortOrder = col, order
 
 	sort.SliceStable(m.items, func(i, j int) bool {
