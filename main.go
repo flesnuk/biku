@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"image/png"
 	"os"
+	"time"
 
 	. "github.com/flesnuk/biku/osuhm"
 	oppai "github.com/flesnuk/oppai5"
@@ -41,6 +44,11 @@ func main() {
 
 	hm = Load(".")
 	if hm == nil {
+		if isOsuOpen() {
+			walk.MsgBox(mw, "osu!db", "Please, close osu! before starting this app for the this time",
+				walk.MsgBoxIconExclamation)
+			return
+		}
 		var ok bool
 		osuFolder, ok = checkAll()
 		for !ok {
@@ -53,13 +61,7 @@ func main() {
 			osuFolder = fd.FilePath
 			_, ok = checkAll()
 		}
-		hmaux := NewOsuHM(osuFolder)
-		if hmaux == nil {
-			walk.MsgBox(mw, "osu!db", "Please, close osu! before refreshing the cache",
-				walk.MsgBoxIconExclamation)
-			return
-		}
-		hm = hmaux
+		hm = NewOsuHM(osuFolder)
 		osuapi := &OsuAPIKey{""}
 		if _, err := getDialog(osuapi).Run(nil); err != nil {
 			fmt.Println(err)
@@ -94,6 +96,7 @@ func main() {
 			model.items = append(model.items, foo)
 			calcPP(osuFile, replay, foo)
 
+			model.ResetRows()
 			tv.Synchronize(func() {
 				model.Sort(1, walk.SortDescending)
 			})
@@ -104,7 +107,19 @@ func main() {
 	panelPP = new(PPanel)
 
 	imv := new(walk.ImageView)
-	getMainWindow(model, tv, imv, panelPP).Run()
+	window := getMainWindow(model, tv, imv, panelPP)
+	go func() {
+		time.Sleep(100 * time.Millisecond)
+		data, err := Asset("icon/biku.png")
+		if err != nil || len(data) == 0 {
+			fmt.Println("Asset was not found.")
+		}
+		im, err := png.Decode(bytes.NewReader(data))
+		ic, err := walk.NewIconFromImage(im)
+		mw.SetIcon(ic)
+	}()
+
+	window.Run()
 	hm.SaveCache(".")
 }
 

@@ -15,7 +15,7 @@ func getMainWindow(model *FooModel, tv *walk.TableView, imv *walk.ImageView, pan
 	watchReplayBtn := new(walk.PushButton)
 	return MainWindow{
 		AssignTo: &mw,
-		Title:    "Biku",
+		Title:    "びく",
 		Size:     Size{950, 560},
 		Layout:   VBox{MarginsZero: true},
 		Children: []Widget{
@@ -318,16 +318,19 @@ func getMainWindow(model *FooModel, tv *walk.TableView, imv *walk.ImageView, pan
 					PushButton{
 						Text: "Refresh cache",
 						OnClicked: func() {
-							apikey := hm.APIKey
-							hmaux := osuhm.NewOsuHM(osuFolder)
-							if hmaux == nil {
+							if isOsuOpen() {
 								walk.MsgBox(mw, "osu!db", "Please, close osu! before refreshing the cache",
 									walk.MsgBoxIconExclamation)
 								return
 							}
+							apikey := hm.APIKey
+							hmaux := osuhm.NewOsuHM(hm.OsuFolder)
 							hm = hmaux
 							hm.APIKey = apikey
 							model.ResetRows()
+							tv.Synchronize(func() {
+								model.Sort(model.sortColumn, model.sortOrder)
+							})
 						},
 					},
 					PushButton{
