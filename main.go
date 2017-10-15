@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"image/png"
 	"os"
-	"time"
 
 	. "github.com/flesnuk/biku/osuhm"
 	oppai "github.com/flesnuk/oppai5"
@@ -108,18 +107,16 @@ func main() {
 
 	imv := new(walk.ImageView)
 	window := getMainWindow(model, tv, imv, panelPP)
-	go func() {
-		time.Sleep(100 * time.Millisecond)
-		data, err := Asset("icon/biku.png")
-		if err != nil || len(data) == 0 {
-			fmt.Println("Asset was not found.")
-		}
-		im, err := png.Decode(bytes.NewReader(data))
-		ic, err := walk.NewIconFromImage(im)
-		mw.SetIcon(ic)
-	}()
+	window.Create()
+	data, err := Asset("icon/biku.png")
+	if err != nil || len(data) == 0 {
+		fmt.Println("Asset was not found.")
+	}
+	im, err := png.Decode(bytes.NewReader(data))
+	ic, err := walk.NewIconFromImage(im)
+	mw.SetIcon(ic)
 
-	window.Run()
+	mw.Run()
 	hm.SaveCache(".")
 }
 

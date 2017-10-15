@@ -18,6 +18,10 @@ func getMainWindow(model *RowModel, tv *walk.TableView, imv *walk.ImageView, pan
 		Title:    "びく",
 		Size:     Size{950, 560},
 		Layout:   VBox{MarginsZero: true},
+		OnKeyUp: func(k walk.Key) {
+			tv.SetCurrentIndex(-1)
+			tv.SetCurrentIndex(0)
+		},
 		Children: []Widget{
 			Composite{
 				Layout: HBox{MarginsZero: true},
@@ -352,6 +356,7 @@ func getMainWindow(model *RowModel, tv *walk.TableView, imv *walk.ImageView, pan
 						OnCurrentIndexChanged: func() {
 							lastago = HowMuchTimeAgo()[comboBoxValue.CurrentIndex()].Id
 							model.ResetRows()
+							tv.SetFocus()
 						},
 					},
 					HSpacer{},
