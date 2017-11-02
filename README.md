@@ -1,4 +1,4 @@
-# biku 
+# biku ![](https://img.shields.io/github/downloads/flesnuk/biku/total.svg)
 
 osu! replay inspector which lets you see all the recent replays you made and PP info about them. 
 
