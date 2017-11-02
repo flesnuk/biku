@@ -14,10 +14,10 @@ func grade(r osu.Replay) string {
 	case acc == 1.0:
 		return "SS"
 	case float32(r.N300)/float32(numNotes) >= 0.9 &&
-		float32(r.N50)/float32(numNotes) <= 0.1 &&
+		float32(r.N50)/float32(numNotes) <= 0.01 &&
 		r.Misses == 0:
 		return "S"
-	case float32(r.N300)/float32(numNotes) >= 0.8 &&
+	case float32(r.N300)/float32(numNotes) >= 0.8 && r.Misses == 0 ||
 		float32(r.N300)/float32(numNotes) >= 0.9:
 		return "A"
 	case float32(r.N300)/float32(numNotes) >= 0.7 && r.Misses == 0 ||
