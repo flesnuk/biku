@@ -44,7 +44,7 @@ func main() {
 	hm = Load(".")
 	if hm == nil {
 		if isOsuOpen() {
-			walk.MsgBox(mw, "osu!db", "Please, close osu! before starting this app for the this time",
+			walk.MsgBox(mw, "osu!db", "Please, close osu! before starting this app for the first time",
 				walk.MsgBoxIconExclamation)
 			return
 		}
