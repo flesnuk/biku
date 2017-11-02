@@ -14,6 +14,7 @@ import (
 )
 
 const cachefile = "cache.gob"
+const bikuVersion = "v1.0.1"
 
 var osuFolder = ""
 var lastago = -1

@@ -370,6 +370,9 @@ func getMainWindow(model *RowModel, tv *walk.TableView, imv *walk.ImageView, pan
 						},
 						Enabled: false,
 					},
+					Label{
+						Text: bikuVersion,
+					},
 				},
 			},
 		},
