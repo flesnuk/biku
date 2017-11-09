@@ -12,6 +12,8 @@ import (
 
 const cacheName = "biku-cache.gob"
 
+var BeatmapDir = "Songs"
+
 // OsuHM stores osu root path, the api key and hashmap of beatmaps
 type OsuHM struct {
 	OsuFolder string
@@ -76,7 +78,13 @@ func (osuhm *OsuHM) StartNotifier(replayChan chan osu.Replay) {
 
 // GetBeatmapPath returns the full path of the specified beatmap
 func (osuhm *OsuHM) GetBeatmapPath(beatmap *osu.Beatmap) string {
-	s := fmt.Sprintf("%s/%d*", path.Join(osuhm.OsuFolder, "Songs"), beatmap.ID)
+	var s string
+	if BeatmapDir == "Songs" {
+		s = fmt.Sprintf("%s/%d*", path.Join(osuhm.OsuFolder, BeatmapDir), beatmap.ID)
+	} else {
+		s = fmt.Sprintf("%s/%d*", filepath.ToSlash(BeatmapDir), beatmap.ID)
+	}
+
 	files, _ := filepath.Glob(s)
 	if len(files) <= 0 {
 		return ""
