@@ -14,7 +14,6 @@ import (
 )
 
 const cachefile = "cache.gob"
-const bikuVersion = "v1.0.1"
 
 var osuFolder = ""
 var lastago = -1
@@ -40,6 +39,8 @@ func calcPP(osuFile *os.File, replay osu.Replay, row *Row) {
 }
 
 func main() {
+	defer saveLogIfPanic()
+
 	tv := new(walk.TableView)
 
 	hm = Load(".")
@@ -70,7 +71,7 @@ func main() {
 		hm.SaveCache(".")
 	}
 
-	osuFolder = hm.OsuFolder
+	hm.InitBeatmapDir()
 
 	model := NewRowModel()
 	tv.Synchronize(func() {
@@ -120,5 +121,3 @@ func main() {
 	mw.Run()
 	hm.SaveCache(".")
 }
-
-//504911232000000000 y 1601
