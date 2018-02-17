@@ -12,5 +12,6 @@ func HowMuchTimeAgo() []*TimeAgo {
 		{-30, "Last month"},
 		{-90, "Last 3 months"},
 		{-180, "Last 6 months"},
+		{-3650, "All time"},
 	}
 }
