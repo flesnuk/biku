@@ -1,10 +1,13 @@
 package osuhm
 
 import (
+	"strconv"
+	"github.com/karrick/godirwalk"
 	"fmt"
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/flesnuk/osu-tools/osu"
 	"github.com/flesnuk/osu-tools/osudb"
@@ -60,6 +63,9 @@ func (osuhm *OsuHM) GetBeatmap(beatmapHash string) *osu.Beatmap {
 	bm, ok := osuhm.HM[beatmapHash]
 
 	if !ok {
+		if osuhm.APIKey == "" {
+			return nil
+		}
 		bm = apiGetBeatmap(osuhm.APIKey, beatmapHash)
 		if bm.ID == 0 {
 			return nil
@@ -78,19 +84,26 @@ func (osuhm *OsuHM) StartNotifier(replayChan chan osu.Replay) {
 
 // GetBeatmapPath returns the full path of the specified beatmap
 func (osuhm *OsuHM) GetBeatmapPath(beatmap *osu.Beatmap) string {
-	var s string
+	var beatmapDir string
 	if BeatmapDir == "Songs" {
-		s = fmt.Sprintf("%s/%d*", path.Join(osuhm.OsuFolder, BeatmapDir), beatmap.ID)
+		beatmapDir = filepath.Join(osuhm.OsuFolder, BeatmapDir)
 	} else {
-		s = fmt.Sprintf("%s/%d*", filepath.ToSlash(BeatmapDir), beatmap.ID)
+		beatmapDir = filepath.ToSlash(BeatmapDir)
 	}
-
-	files, _ := filepath.Glob(s)
-	if len(files) <= 0 {
+	
+	children, err := godirwalk.ReadDirnames(beatmapDir, nil)
+	if err != nil {
 		return ""
 	}
 
-	return filepath.Join(filepath.ToSlash(files[0]),
+	beatmapPath := ""
+	for _, child := range children {
+		if strings.HasPrefix(child, strconv.Itoa(int(beatmap.ID))) {
+			beatmapPath = filepath.Join(beatmapDir, child)
+		}
+	}
+	
+	return filepath.Join(beatmapPath,
 		beatmap.Filename)
 
 }

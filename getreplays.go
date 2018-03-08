@@ -18,7 +18,7 @@ func getReplaysFromDB() []*Row {
 	ff, err := os.Open(path.Join(hm.OsuFolder, "scores.db"))
 	defer ff.Close()
 	if err != nil {
-		fmt.Println("FAIL")
+		fmt.Println("Couldn't open scores.db")
 	}
 	list := osr.ReadScoreDB(ff)
 	ret := make([]*Row, 0, 5)
@@ -66,22 +66,22 @@ func getReplays() []*Row {
 		if x.ModTime().Before(time.Now().AddDate(0, 0, lastago)) {
 			break
 		}
-
+		
 		replay := getReplay(x)
 		if replay == nil {
 			continue
 		}
-
+		
 		bm := hm.GetBeatmap(replay.BeatmapHash)
 		if bm == nil {
 			continue
 		}
-
+		
 		osuFile, err := os.Open(hm.GetBeatmapPath(bm))
 		if err != nil {
 			continue
 		}
-
+		
 		row := createRow(osuFile, replay, bm)
 		ret = append(ret, row)
 		calcPP(osuFile, *replay, row)
