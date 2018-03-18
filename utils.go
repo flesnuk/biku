@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"os/user"
 	"path"
 	"path/filepath"
 	"sort"
@@ -72,13 +73,16 @@ func checkAll() (string, bool) {
 	switch {
 	case check(osuFolder):
 		return osuFolder, true
-	case check("C:/Program Files/osu!"):
-		return "C:/Program Files/osu!", true
-	case check("C:/Program Files (x86)/osu!"):
-		return "C:/Program Files (x86)/osu!", true
+	case check(path.Join("C:","Program Files","osu!")):
+		return path.Join("C:","Program Files","osu!"), true
+	case check(path.Join("C:","Program Files (x86)","osu!")):
+		return path.Join("C:","Program Files (x86)","osu!"), true
 	case check("."):
 		return ".", true
 	default:
+		if usr, err := user.Current(); err == nil {
+			return path.Join(usr.HomeDir, "AppData", "Local", "osu!"), true
+		}
 		return "", false
 	}
 }
