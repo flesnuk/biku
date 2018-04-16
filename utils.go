@@ -73,15 +73,16 @@ func checkAll() (string, bool) {
 	switch {
 	case check(osuFolder):
 		return osuFolder, true
-	case check(path.Join("C:","Program Files","osu!")):
-		return path.Join("C:","Program Files","osu!"), true
-	case check(path.Join("C:","Program Files (x86)","osu!")):
-		return path.Join("C:","Program Files (x86)","osu!"), true
+	case check(path.Join("C:", "Program Files", "osu!")):
+		return path.Join("C:", "Program Files", "osu!"), true
+	case check(path.Join("C:", "Program Files (x86)", "osu!")):
+		return path.Join("C:", "Program Files (x86)", "osu!"), true
 	case check("."):
 		return ".", true
 	default:
 		if usr, err := user.Current(); err == nil {
-			return path.Join(usr.HomeDir, "AppData", "Local", "osu!"), true
+			f := path.Join(usr.HomeDir, "AppData", "Local", "osu!")
+			return f, check(f)
 		}
 		return "", false
 	}
