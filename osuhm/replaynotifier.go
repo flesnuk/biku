@@ -35,15 +35,18 @@ func RunNotifier(osuFolder string, replayChan chan osu.Replay) {
 		var f *os.File
 		var err error
 		// Try opening the replay file until osu! closes it
-		for {
+		for attempts := 10; attempts > 0; attempts-- {
 			f, err = os.Open(filepath.ToSlash(ei.Path()))
 			if err == nil {
 				break
 			}
 			time.Sleep(time.Millisecond * 500)
 		}
-		replay := osr.NewReplay(f)
+		replay, err := osr.NewReplay(f)
 		f.Close()
+		if err != nil {
+			continue
+		}
 		replay.ModTime = time.Now()
 		replay.Path = filepath.ToSlash(ei.Path())
 		replayChan <- replay

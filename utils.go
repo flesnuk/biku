@@ -17,9 +17,9 @@ func getReplay(x os.FileInfo) *osu.Replay {
 	if err != nil {
 		return nil
 	}
-	replay := osr.NewReplay(f)
+	replay, err := osr.NewReplay(f)
 	f.Close()
-	if replay.GameMode != 0 {
+	if err != nil || replay.GameMode != 0 {
 		return nil
 	}
 	replay.ModTime = x.ModTime()

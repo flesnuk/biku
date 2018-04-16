@@ -92,6 +92,6 @@ func getReplays() []*Row {
 }
 
 func replayPath(replay *osu.Replay) string {
-	filename := replay.BeatmapHash + "-" + strconv.FormatInt(int64(replay.TimeStamp)-504911232000000000, 10)
+	filename := replay.BeatmapHash + "-" + strconv.FormatInt(int64(replay.TimeStamp)-504911232000000000, 10) + ".osr"
 	return path.Join(hm.OsuFolder, "Data", "r", filename)
 }

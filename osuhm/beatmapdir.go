@@ -2,8 +2,6 @@ package osuhm
 
 import (
 	"bufio"
-	"fmt"
-	"log"
 	"os"
 	"os/user"
 	"path"
@@ -23,15 +21,24 @@ import (
 	If it's needed, there is no license for this file and code etc. You can also treat this like a WTFPL or smt
 */
 
-func (osuhm *OsuHM) InitBeatmapDir() {
-	BeatmapDir = osuhm.getBeatmapDirectory(getMachineUsername())
+func (osuhm *OsuHM) InitBeatmapDir() error {
+	username, err := getMachineUsername()
+	if err != nil {
+		return err
+}
+	bmdir, err := osuhm.getBeatmapDirectory(username)
+	if err != nil {
+		return err
+	}
+	BeatmapDir = bmdir
+	return nil
 }
 
 // GetBeatmapDirectory returns the "Songs" folder from BeatmapDirectory conf variable resided in .cfg file
-func (osuhm *OsuHM) getBeatmapDirectory(username string) string {
+func (osuhm *OsuHM) getBeatmapDirectory(username string) (string, error) {
 	f, err := os.Open(path.Join(osuhm.OsuFolder, "osu!."+username+".cfg"))
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
@@ -43,28 +50,28 @@ func (osuhm *OsuHM) getBeatmapDirectory(username string) string {
 			// tested how spaces inside path works at all (if Osu reads for eg. "D:\My Osu Songs\Songs",
 			// if Trim function won't delete them, if it'll be working with quotes etc.), so pls test
 			// before merge! :)
-			return strings.TrimSpace(strings.Split(line, "=")[1])
+			return strings.TrimSpace(strings.Split(line, "=")[1]), nil
 		}
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		return "", err
 	}
 
 	// If theres no "Beatmap Directory" setting, try default "Songs" folder
 	// Could also return "" and then/instead read error, or check if %OsuFolder%/Songs exists
 	// or something... Just preferences.
-	return "Songs"
+	return "Songs", nil
 }
 
-func getMachineUsername() string {
+func getMachineUsername() (string, error) {
 	user, err := user.Current()
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
 	// Get the username and get rid of computer name or smt (be careful don't use "user.Name"! It could be
 	// same as username (eg."jankow") but it's common to give it some sort of full name eg. "Jan Kowalsky")
 	// I'm sure you know that but better safe than sorry (and waste time debugging) + you could have same name and username
-	return strings.Split(user.Username, "\\")[1]
+	return strings.Split(user.Username, "\\")[1], nil
 }

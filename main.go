@@ -39,6 +39,7 @@ func calcPP(osuFile *os.File, replay osu.Replay, row *Row) {
 }
 
 func main() {
+	var err error
 	defer saveLogIfPanic()
 
 	tv := new(walk.TableView)
@@ -46,7 +47,7 @@ func main() {
 	hm = Load(".")
 	if hm == nil {
 		if isOsuOpen() {
-			walk.MsgBox(mw, "osu!db", "Please, close osu! before starting this app for the first time",
+			walk.MsgBox(nil, "osu!db", "Please, close osu! before starting this app for the first time",
 				walk.MsgBoxIconExclamation)
 			return
 		}
@@ -62,7 +63,10 @@ func main() {
 			osuFolder = fd.FilePath
 			_, ok = checkAll()
 		}
-		hm = NewOsuHM(osuFolder)
+		hm, err = NewOsuHM(osuFolder)
+		if err != nil {
+			walk.MsgBox(nil, "osu!db", err.Error(), walk.MsgBoxIconError)
+		}
 		osuapi := &OsuAPIKey{""}
 		if _, err := getDialog(osuapi).Run(nil); err != nil {
 			fmt.Println(err)
@@ -71,7 +75,10 @@ func main() {
 		hm.SaveCache(".")
 	}
 
-	hm.InitBeatmapDir()
+	err = hm.InitBeatmapDir()
+	if err != nil {
+		walk.MsgBox(nil, "InitBeatmapDir", err.Error(), walk.MsgBoxIconError)
+	}
 
 	model := NewRowModel()
 	tv.Synchronize(func() {

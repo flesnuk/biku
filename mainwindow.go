@@ -328,7 +328,10 @@ func getMainWindow(model *RowModel, tv *walk.TableView, imv *walk.ImageView, pan
 								return
 							}
 							apikey := hm.APIKey
-							hmaux := osuhm.NewOsuHM(hm.OsuFolder)
+							hmaux, err := osuhm.NewOsuHM(hm.OsuFolder)
+							if err != nil {
+								walk.MsgBox(mw, "osu!db", err.Error(), walk.MsgBoxIconError)
+							}
 							hm = hmaux
 							hm.APIKey = apikey
 							model.ResetRows()

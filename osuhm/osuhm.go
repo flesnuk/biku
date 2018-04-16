@@ -1,13 +1,14 @@
 package osuhm
 
 import (
-	"strconv"
-	"github.com/karrick/godirwalk"
 	"fmt"
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
+
+	"github.com/karrick/godirwalk"
 
 	"github.com/flesnuk/osu-tools/osu"
 	"github.com/flesnuk/osu-tools/osudb"
@@ -26,17 +27,20 @@ type OsuHM struct {
 
 // New creates a new OsuHM
 // it opens osu!.db file, if it was opened before use Load instead
-func NewOsuHM(osuFolder string) *OsuHM {
+func NewOsuHM(osuFolder string) (*OsuHM, error) {
 	osudbFile, err := os.Open(filepath.Join(osuFolder, "osu!.db"))
-	defer osudbFile.Close()
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	hm := osudb.GetBeatmaps(osudbFile)
+	defer osudbFile.Close()
+	hm, err := osudb.GetBeatmaps(osudbFile)
+	if err != nil {
+		return nil, err
+	}
 	return &OsuHM{
 		OsuFolder: osuFolder,
 		HM:        hm,
-	}
+	}, nil
 }
 
 // Load loads a previously cached OsuHM
