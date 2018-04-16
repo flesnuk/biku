@@ -35,7 +35,7 @@ func getMainWindow(model *RowModel, tv *walk.TableView, imv *walk.ImageView, pan
 						},
 						Model:   model,
 						MinSize: Size{520, 320},
-						// MaxSize: Size{600, 500},
+						MaxSize: Size{580, 500},
 						OnCurrentIndexChanged: func() {
 							updateInfo(tv.CurrentIndex(), model, imv)
 							watchReplayBtn.SetEnabled(true)
@@ -44,8 +44,7 @@ func getMainWindow(model *RowModel, tv *walk.TableView, imv *walk.ImageView, pan
 					Composite{
 						AssignTo: &panel,
 						Layout:   VBox{MarginsZero: true},
-						MinSize:  Size{165, 10},
-						MaxSize:  Size{500, 500},
+						MaxSize:  Size{400, 500},
 
 						Children: []Widget{
 							Composite{
@@ -69,28 +68,28 @@ func getMainWindow(model *RowModel, tv *walk.TableView, imv *walk.ImageView, pan
 											},
 											Label{
 												AssignTo: &panelPP.Mods,
-												Text:     "NOMOD",
+												Text:     "NOMOD  ",
 											},
 											Label{
 												Text: "Combo: ",
 											},
 											Label{
 												AssignTo: &panelPP.Combo,
-												Text:     "0/0x",
+												Text:     "0/0x    ",
 											},
 											Label{
 												Text: "Score: ",
 											},
 											Label{
 												AssignTo: &panelPP.Score,
-												Text:     "0",
+												Text:     "0      ",
 											},
 											Label{
 												Text: "Accuracy: ",
 											},
 											Label{
 												AssignTo: &panelPP.Acc,
-												Text:     "0.00 %",
+												Text:     "0.00 %   ",
 											},
 											Label{
 												Text: "Grade: ",
