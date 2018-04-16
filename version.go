@@ -1,3 +1,3 @@
 package main
 
-const bikuVersion = "v1.1.2"
+const bikuVersion = "v1.2"
